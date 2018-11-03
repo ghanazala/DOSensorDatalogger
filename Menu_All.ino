@@ -13,14 +13,23 @@ LiquidCrystal lcd(9, 8, 10, 11, 12, 13);
 DS3231  rtc(20, 21);
 String oldDate, oldTime, tanggal, waktu;
 volatile byte state = LOW;
-int8_t menu, submenu, flag0, flag1, lastSubmenu, lastMenu, intervalMenu, lastIntervalMenu;
+int8_t menu, submenu, flag0, flag1, lastSubmenu, lastMenu, intervalMenu, lastIntervalMenu, calMenu, lastCalMenu;
 long deltaTime=0;
+String sensorstring1 = "";
+String sensorstring2 = "";
+String sensorstring3 = "";
+boolean sensor_string_complete1 = false;
+boolean sensor_string_complete2 = false;
+boolean sensor_string_complete3 = false;
 
 void setup() {
   Serial.begin(9600);
   Serial1.begin(9600);
   Serial2.begin(9600);
   Serial3.begin(9600);
+  sensorstring1.reserve(30);
+  sensorstring2.reserve(30);
+  sensorstring3.reserve(30);
   rtc.begin();
   lcd.begin(20, 4);
   pinMode(up, INPUT_PULLUP);
@@ -88,7 +97,6 @@ void loop() {
           lcd.clear();
         }
         lastIntervalMenu = intervalMenu;
-        Serial.print(submenu);Serial.print(menu);Serial.print(intervalMenu);
         switch(intervalMenu){
           case 0:
             lcd.setCursor(0,0);
@@ -158,9 +166,37 @@ void loop() {
         }
         break;
       case 1:
-        lcd.setCursor(0,0);
-        lcd.print("Calibrate All Sensor");
-        
+        if(lastCalMenu!=calMenu){
+          lcd.clear();
+        }
+        lastCalMenu = calMenu;
+        switch(calMenu){
+          case 0:
+            lcd.setCursor(0,0);
+            lcd.print(">>Clear Calbiration");
+            showDataSensor();
+            break;
+          case 1:
+            lcd.setCursor(0,0);
+            lcd.print(">>Single Calibration");
+            showDataSensor();
+            break;
+          case 2:
+            lcd.setCursor(0,0);
+            lcd.print(">>Dual Calbiration");
+            showDataSensor();
+            break;
+        }
+        flag1=0;
+        while(digitalRead(enter)){
+          flag1=1;
+        }
+        if(flag1){
+          calMenu++;
+          if(calMenu>2){
+            calMenu=0;
+          }
+        }
         break;
       case 2:
         lcd.setCursor(0,0);
@@ -174,7 +210,7 @@ void loop() {
   }
   lastSubmenu = submenu;
 }
-
+//TOMBOL KANAN
 void int2Handler()
 {
  static unsigned long last_interrupt_time = 0;
@@ -183,27 +219,27 @@ void int2Handler()
  if (interrupt_time - last_interrupt_time > 200)
  {
      if(submenu==0){
-      submenu++;
-      if(submenu>1){
-        submenu=1;
-      }
+       submenu++;
+       if(submenu>1){
+         submenu=1;
+       }
      }
+     //SET INTERVAL
      else if(submenu==1 && menu==0){
-      if(intervalMenu==0){
-        deltaTime+=3600;
-      }
-      else if(intervalMenu==1){
-        deltaTime+=60;
-      }
-      else if(intervalMenu==2){
-        deltaTime+=1;
-      }
+        if(intervalMenu==0){
+          deltaTime+=3600;
+        }
+        else if(intervalMenu==1){
+          deltaTime+=60;
+        }
+        else if(intervalMenu==2){
+          deltaTime+=1;
+        }
      }
-     
  }
  last_interrupt_time = interrupt_time;
 }
-
+//TOMBOL TENGAH
 void int3Handler()
 {
  static unsigned long last_interrupt_time = 0;
@@ -211,23 +247,24 @@ void int3Handler()
  // If interrupts come faster than 200ms, assume it's a bounce and ignore
  if (interrupt_time - last_interrupt_time > 200)
  {
-   if(submenu==1 && menu==0){
-     if(intervalMenu==0 && deltaTime>=3600){
-        deltaTime-=3600;
-      }
-      else if(intervalMenu==1 && deltaTime>=60){
-        deltaTime-=60;
-      }
-      else if(intervalMenu==2 && deltaTime>0){
-        deltaTime-=1;
-      }
-   }
-   else{
+  if(submenu==0){
     submenu--;
     if(submenu<0){
       submenu=0;
     }
    }
+   else if(submenu==1 && menu==0){
+    if(intervalMenu==0 && deltaTime>=3600){
+      deltaTime-=3600;
+    }
+    else if(intervalMenu==1 && deltaTime>=60){
+      deltaTime-=60;
+    }
+    else if(intervalMenu==2 && deltaTime>0){
+      deltaTime-=1;
+    }
+   }
+
  }
  last_interrupt_time = interrupt_time;
 }
