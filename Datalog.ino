@@ -33,7 +33,32 @@ void showDeltaString(int col, int row){
   }
 }
 
-String calculateTimeStamp(String curTime, int delta){
-  
+String calcStampTime(String waktu, long delta){
+  long waktuInSec, jam, menit, detik;
+  String strjam, strmenit, strdetik;
+  waktuInSec = waktu.substring(0,2).toInt()*3600+waktu.substring(3,5).toInt()*60+waktu.substring(6,8).toInt();
+  waktuInSec+=delta;
+  jam = waktuInSec/3600;
+  menit = (waktuInSec-(jam*3600))/60;
+  detik = (waktuInSec-(jam*3600)-(menit*60));
+  if(jam>9){
+    strjam = String(jam);
+  }
+  else{
+    strjam = "0"+String(jam);
+  }
+  if(menit>9){
+    strmenit = String(menit);
+  }
+  else{
+    strmenit = "0"+String(menit);
+  }
+  if(detik>9){
+    strdetik = String(detik);
+  }
+  else{
+    strdetik = "0"+String(detik);
+  }
+  return strjam+":"+strmenit+":"+strdetik;
 }
 

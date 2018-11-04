@@ -20,8 +20,12 @@ void showDataSensor(){
   sensorFlag &= sensor_string_complete3;
   if (sensorFlag){
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print(rtc.getTimeStr());
+    lcd.setCursor(0,0);
+    lcd.print(curTime);
+    lcd.setCursor(8,0);
+    lcd.print(" -- ");
+    lcd.setCursor(12,0);
+    lcd.print(stampTime);
     lcd.setCursor(0,1);
     lcd.print("DO1:");
     lcd.print(sensorstring1);
@@ -32,6 +36,9 @@ void showDataSensor(){
     lcd.print("DO3:");
     lcd.print(sensorstring3);
     sensorFlag = false;
+    DO1 = sensorstring1;
+    DO2 = sensorstring2;
+    DO3 = sensorstring3;
     sensorstring1 = "";
     sensorstring2 = "";
     sensorstring3 = "";

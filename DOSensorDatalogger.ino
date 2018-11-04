@@ -11,13 +11,17 @@ File dataFile;
 const int8_t pinCS = 53;
 LiquidCrystal lcd(9, 8, 10, 11, 12, 13);
 DS3231  rtc(20, 21);
-volatile byte state = LOW;
+
+bool saveNow = false;
 int8_t menu, submenu, flag0, flag1, lastSubmenu, lastMenu, intervalMenu, lastIntervalMenu, calMenu, lastCalMenu;
-long deltaTime=0;
-String timeStamp = "";
+long deltaTime = 5;
+String curTime, curDate, stampTime;
 String sensorstring1 = "";
 String sensorstring2 = "";
 String sensorstring3 = "";
+String DO1 = "";
+String DO2 = "";
+String DO3 = "";
 boolean sensor_string_complete1 = false;
 boolean sensor_string_complete2 = false;
 boolean sensor_string_complete3 = false;
@@ -43,8 +47,11 @@ void setup() {
 }
 
 void loop() {
+  curTime = rtc.getTimeStr();
+  curDate = rtc.getDateStr(FORMAT_SHORT);
   if(submenu==0){
-    showDatetime(0,0);
+    showDatetime(curTime,curDate,0,0);
+    saveNow = false;
     switch(menu){
       case 0:
         lcd.setCursor(0,1);
@@ -197,16 +204,19 @@ void loop() {
         }
         break;
       case 2:
-        //timeStamp = calculateTimeStamp(deltaTime);
-        lcd.setCursor(8,0);
-        lcd.print(" >> ");
-        lcd.setCursor(12,0);
-        lcd.print("timeStam");
-        /*
-        if(rtc.getTimeStr() == timeStamp){
-          write all data to SDCard
-        }*/
-        showDataSensor();
+        if(saveNow){
+          showDataSensor();
+          if(curTime == stampTime){
+            stampTime = calcStampTime(curTime, deltaTime);
+            Serial.println(curTime);
+            Serial.print("DO1:");Serial.print(DO1);Serial.print("\t");Serial.print("DO2:");Serial.print(DO2);Serial.print("\t");Serial.print("DO3:");Serial.println(DO3);
+            //Write Data to SDCard
+          }
+        }
+        else{
+          stampTime = calcStampTime(curTime, deltaTime);
+          saveNow = true;
+        }
         break;
       default:
         submenu=1;

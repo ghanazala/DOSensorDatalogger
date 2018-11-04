@@ -1,7 +1,5 @@
-String oldDate = "", oldTime = "", tanggal, waktu;
-void showDatetime(int col, int row){
-  tanggal = rtc.getDateStr(FORMAT_SHORT);
-  waktu = rtc.getTimeStr();
+String oldDate = "", oldTime = "";
+void showDatetime(String waktu, String tanggal, int col, int row){
   if(oldTime != waktu || oldDate != tanggal ){
     lcd.clear();
     lcd.setCursor(col, row);
@@ -11,15 +9,5 @@ void showDatetime(int col, int row){
   }
   oldTime = waktu;
   oldDate = tanggal;
-}
-
-void showClock(int col, int row){
-  waktu = rtc.getTimeStr();
-  if(oldTime != waktu ){
-    lcd.clear();
-    lcd.setCursor(col, row);
-    lcd.print(rtc.getTimeStr());
-  }
-  oldTime = waktu;
 }
 

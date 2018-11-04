@@ -13,3 +13,8 @@ bool sdCard_init(){
   }
   return true;
 }
+
+void writeDataSensor(){
+  
+}
+
