@@ -33,3 +33,7 @@ void showDeltaString(int col, int row){
   }
 }
 
+String calculateTimeStamp(String curTime, int delta){
+  
+}
+

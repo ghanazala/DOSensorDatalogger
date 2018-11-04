@@ -11,10 +11,10 @@ File dataFile;
 const int8_t pinCS = 53;
 LiquidCrystal lcd(9, 8, 10, 11, 12, 13);
 DS3231  rtc(20, 21);
-String oldDate, oldTime, tanggal, waktu;
 volatile byte state = LOW;
 int8_t menu, submenu, flag0, flag1, lastSubmenu, lastMenu, intervalMenu, lastIntervalMenu, calMenu, lastCalMenu;
 long deltaTime=0;
+String timeStamp = "";
 String sensorstring1 = "";
 String sensorstring2 = "";
 String sensorstring3 = "";
@@ -38,15 +38,13 @@ void setup() {
   pinMode(pinCS, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(2), int2Handler, RISING);
   attachInterrupt(digitalPinToInterrupt(3), int3Handler, RISING);
-  oldDate = "";
-  oldTime = "";
   while(!sdCard_init()){
   }
 }
 
 void loop() {
   if(submenu==0){
-    showClock(0,0);
+    showDatetime(0,0);
     switch(menu){
       case 0:
         lcd.setCursor(0,1);
@@ -199,9 +197,16 @@ void loop() {
         }
         break;
       case 2:
-        lcd.setCursor(0,0);
-        lcd.print("Start DATALOG");
-        showClock(0,1);
+        //timeStamp = calculateTimeStamp(deltaTime);
+        lcd.setCursor(8,0);
+        lcd.print(" >> ");
+        lcd.setCursor(12,0);
+        lcd.print("timeStam");
+        /*
+        if(rtc.getTimeStr() == timeStamp){
+          write all data to SDCard
+        }*/
+        showDataSensor();
         break;
       default:
         submenu=1;
@@ -236,6 +241,18 @@ void int2Handler()
           deltaTime+=1;
         }
      }
+     //SET CALIBRATION
+     else if(submenu==1 && menu ==1){
+        if(calMenu==0){
+          clearCalibration();
+        }
+        else if(calMenu==1){
+          singleCalibration();
+        }
+        else if(calMenu==2){
+          dualCalibration();
+        }
+     }
  }
  last_interrupt_time = interrupt_time;
 }
@@ -247,13 +264,7 @@ void int3Handler()
  // If interrupts come faster than 200ms, assume it's a bounce and ignore
  if (interrupt_time - last_interrupt_time > 200)
  {
-  if(submenu==0){
-    submenu--;
-    if(submenu<0){
-      submenu=0;
-    }
-   }
-   else if(submenu==1 && menu==0){
+   if(submenu==1 && menu==0){
     if(intervalMenu==0 && deltaTime>=3600){
       deltaTime-=3600;
     }
@@ -262,6 +273,12 @@ void int3Handler()
     }
     else if(intervalMenu==2 && deltaTime>0){
       deltaTime-=1;
+    }
+   }
+   else{
+    submenu--;
+    if(submenu<0){
+      submenu=0;
     }
    }
 

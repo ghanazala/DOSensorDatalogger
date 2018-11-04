@@ -13,4 +13,3 @@ bool sdCard_init(){
   }
   return true;
 }
-
