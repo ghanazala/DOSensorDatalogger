@@ -179,17 +179,17 @@ void loop() {
           case 0:
             lcd.setCursor(0,0);
             lcd.print(">>Clear Calbiration");
-            showDataSensor();
+            showOnlyDataSensor();
             break;
           case 1:
             lcd.setCursor(0,0);
             lcd.print(">>Single Calibration");
-            showDataSensor();
+            showOnlyDataSensor();
             break;
           case 2:
             lcd.setCursor(0,0);
             lcd.print(">>Dual Calbiration");
-            showDataSensor();
+            showOnlyDataSensor();
             break;
         }
         flag1=0;
@@ -208,13 +208,12 @@ void loop() {
           showDataSensor();
           if(curTime == stampTime){
             stampTime = calcStampTime(curTime, deltaTime);
-            Serial.println(curTime);
-            Serial.print("DO1:");Serial.print(DO1);Serial.print("\t");Serial.print("DO2:");Serial.print(DO2);Serial.print("\t");Serial.print("DO3:");Serial.println(DO3);
-            //Write Data to SDCard
+            writeDataSensor();
           }
         }
         else{
           stampTime = calcStampTime(curTime, deltaTime);
+          writeHeader();
           saveNow = true;
         }
         break;

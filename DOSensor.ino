@@ -18,7 +18,9 @@ void showDataSensor(){
   sensorFlag = sensor_string_complete1;
   sensorFlag &= sensor_string_complete2;
   sensorFlag &= sensor_string_complete3;
+  Serial.println("SHOW SENSOR");
   if (sensorFlag){
+    Serial.println("MASUK SENSOR");
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(curTime);
@@ -39,6 +41,31 @@ void showDataSensor(){
     DO1 = sensorstring1;
     DO2 = sensorstring2;
     DO3 = sensorstring3;
+    sensorstring1 = "";
+    sensorstring2 = "";
+    sensorstring3 = "";
+    sensor_string_complete1 = false;
+    sensor_string_complete2 = false;
+    sensor_string_complete3 = false;
+  }
+}
+
+void showOnlyDataSensor(){
+  sensorFlag = sensor_string_complete1;
+  sensorFlag &= sensor_string_complete2;
+  sensorFlag &= sensor_string_complete3;
+  if (sensorFlag){
+    lcd.clear();
+    lcd.setCursor(0,1);
+    lcd.print("DO1:");
+    lcd.print(sensorstring1);
+    lcd.setCursor(0,2);
+    lcd.print("DO2:");
+    lcd.print(sensorstring2);
+    lcd.setCursor(0,3);
+    lcd.print("DO3:");
+    lcd.print(sensorstring3);
+    sensorFlag = false;
     sensorstring1 = "";
     sensorstring2 = "";
     sensorstring3 = "";
